@@ -1,0 +1,144 @@
+# keai1
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>video使用</title>
+</head>
+
+
+<body>
+    <div>
+        <video id="video" src="4_1.mp4" controls="true"></video>
+    </div>
+    <div id="progressTime" style="display:none">
+        <div style="float:left">
+            <progress id="progress" max="100" style="width:450px">
+            </progress>
+        </div>
+        <div id="showTime" style="float:left;margin-left:15px"></div>
+        <div style="clear:both"></div>
+    </div>
+    </div>
+    <div>
+        <input type="button" id="btnPlay" onclick="playOrPause()" value="播放" />
+        <input type="button" id="btnSpeedUp" onclick="speedUp()" value="快放" />
+        <input type="button" id="btnSpeedUpDown" onclick="speedDown()" value="慢放" />
+        <input type="button" id="btnVolumeUp" onclick="volumeUp()" value="提高音量" />
+        <input type="button" id="btnVolumeDown" onclick="volumeDown()" value="降低音量" />
+    </div>
+    </div>
+    <script>
+        var speed = 1; //播放速度
+        var volume = 1; //播放音量
+        var video = document.getElementById("video");
+        var playBtn = document.getElementById("btnPlay");
+        var btnSpeedUp = document.getElementById("btnSpeedUp");
+        var btnSpeedUpDown = document.getElementById("btnSpeedUpDown");
+        var btnVolumeUp = document.getElementById("btnVolumeUp");
+        var btnVolumeDown = document.getElementById("btnVolumeDown");
+        var showTime = document.getElementById("showTime");
+
+        video.addEventListener('timeupdate', updateProgress, false); 
+        var progress = document.getElementById("progress");
+        progress.onclick = progressOnClick; 
+
+
+        function playOrPause() {
+            var progressTime = document.getElementById("progressTime");
+            progressTime.style.display = "";
+            if (video.paused) 
+            {
+                playBtn.value = "暂停";
+                video.play();
+                video.playbackRate = speed;
+                video.volume = volume;
+                btnSpeedUp.disabled = "";
+                btnSpeedUpDown.disabled = "";
+                btnVolumeUp.disabled = "";
+                btnVolumeDown.disabled = "";
+            }
+            else
+            {
+                playBtn.value = "播放";
+                video.pause();
+                btnSpeedUp.disabled = "disabled";
+                btnSpeedUpDown.disabled = "disabled";
+                btnVolumeUp.disabled = "disabled";
+                btnVolumeDown.disabled = "disabled";
+            }
+        }
+
+        function speedUp() {
+            video.playbackRate += 1;
+            speed = video.playbackRate;
+        }
+        function speedDown() {
+            video.playbackRate -= 1;
+            if (video.playbackRate < 0) {
+                video.playbackRate = 0;
+            }
+            speed = video.playbackRate;
+        }
+        function volumeUp() {
+            if (video.volume < 1) {
+                video.volume += 0.1;
+                if (video.volume > 0) {
+                    video.muted = false;
+                }
+            }
+            volume = video.volume;
+        }
+        //降低音量
+        function volumeDown() {
+            if (video.volume > 0) {
+                video.volume -= 0.1;
+                if (video.volume == 0) {
+                    video.muted = true;
+                }
+            }
+            volume = video.volume;
+        }
+        function progressOnClick(event) {
+            var progress = document.getElementById("progress");
+            if (event.offsetX) 
+            {
+                video.currentTime = video.duration * (event.offsetX / progress.clientWidth); 
+            }
+            else {
+                video.currentTime = video.duration * (event.clientX / progress.clientWidth);
+            }
+        }
+        function updateProgress() {
+            var currentPercent = Math.round(Math.floor(video.currentTime) / Math.floor(video.duration) * 100, 0);//计算当前播放时长与视频总时长之比
+            var progress = document.getElementById("progress");
+            progress.value = currentPercent;
+            showTime.innerHTML = calculateTime(Math.floor(video.currentTime)) + "/" + calculateTime(Math.floor(video.duration));//显示播放时间
+        }
+        function calculateTime(time) {
+            var h;
+            var m;
+            var s;
+            h = String(parseInt(time / 3600, 10));
+            if (h.length == 1) {
+                h = '0' + h;
+            }
+            m = String(parseInt((time % 3600) / 60, 10));
+            if (m.length == 1) {
+                m = '0' + m;
+            }
+            s = String(parseInt(time % 60), 10)
+            if (s.length == 1) {
+                s = '0' + s;
+            }
+            return h + ":" + m + ":" + s;
+        }
+    </script>
+
+</body>
+
+</html>
